@@ -1,28 +1,30 @@
 import pandas as pd
 from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
+import joblib
 
-# Sample dataset
-data = pd.DataFrame({
-    'Speed_Limit': [30, 50, 70, 80, 60],
-    'Weather_Condition': ['Clear', 'Rain', 'Snow', 'Clear', 'Fog'],
-    'Accident_Severity': [1, 2, 3, 2, 1]
-})
+# Load data
+data = pd.read_csv('road_accident_data.csv')
 
-# Encode Weather_Condition into numbers
+# Encode categorical variables
+label_cols = ['Weather_Condition', 'Light_Conditions', 'Urban_or_Rural_Area', 'Day_of_Week', 'Time_of_Day', 'Road_Surface_Condition']
 le = LabelEncoder()
-data['Weather_Condition_Encoded'] = le.fit_transform(data['Weather_Condition'])
+for col in label_cols:
+    data[col] = le.fit_transform(data[col])
 
-# Define independent variables and dependent variable
-X = data[['Speed_Limit', 'Weather_Condition_Encoded']]  # independent variables
-y = data['Accident_Severity']                           # dependent variable
+# Define features and target
+X = data[['Speed_Limit', 'Weather_Condition', 'Light_Conditions', 'Number_of_Vehicles_Involved',
+          'Urban_or_Rural_Area', 'Day_of_Week', 'Time_of_Day', 'Road_Surface_Condition']]
+y = data['Accident_Severity']
 
-# Train linear regression model
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Train the model
 model = LinearRegression()
-model.fit(X, y)
+model.fit(X_train, y_train)
 
-# Output the learned coefficients
-print("Intercept")
-print("Coefficient for Speed_Limit")
-print("Coefficient for Weather_Condition")
+# Save the model
+joblib.dump(model, 'accident_severity_model.pkl')
 
