@@ -1,0 +1,28 @@
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import LabelEncoder
+
+# Sample dataset
+data = pd.DataFrame({
+    'Speed_Limit': [30, 50, 70, 80, 60],
+    'Weather_Condition': ['Clear', 'Rain', 'Snow', 'Clear', 'Fog'],
+    'Accident_Severity': [1, 2, 3, 2, 1]
+})
+
+# Encode Weather_Condition into numbers
+le = LabelEncoder()
+data['Weather_Condition_Encoded'] = le.fit_transform(data['Weather_Condition'])
+
+# Define independent variables and dependent variable
+X = data[['Speed_Limit', 'Weather_Condition_Encoded']]  # independent variables
+y = data['Accident_Severity']                           # dependent variable
+
+# Train linear regression model
+model = LinearRegression()
+model.fit(X, y)
+
+# Output the learned coefficients
+print("Intercept")
+print("Coefficient for Speed_Limit")
+print("Coefficient for Weather_Condition")
+
