@@ -1,0 +1,11 @@
+Speed_Limit,Weather_Condition,Light_Conditions,Number_of_Vehicles_Involved,Urban_or_Rural_Area,Day_of_Week,Time_of_Day,Road_Surface_Condition,Accident_Severity
+30,Clear,Daylight,2,Urban,Monday,Morning,Dry,1
+50,Rain,Darkness,3,Rural,Tuesday,Evening,Wet,2
+70,Fog,Daylight,1,Urban,Wednesday,Night,Snow,3
+40,Snow,Darkness,2,Rural,Thursday,Morning,Ice,2
+60,Clear,Daylight,1,Urban,Friday,Evening,Dry,1
+80,Rain,Darkness,4,Rural,Saturday,Night,Wet,3
+90,Clear,Daylight,2,Urban,Sunday,Morning,Snow,1
+50,Fog,Darkness,3,Urban,Monday,Evening,Ice,2
+30,Rain,Daylight,2,Rural,Tuesday,Night,Dry,2
+70,Snow,Darkness,1,Urban,Wednesday,Morning,Wet,3
