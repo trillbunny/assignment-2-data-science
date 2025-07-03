@@ -1,0 +1,81 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+
+# Load dataset
+data = pd.read_csv('road_accident_data.csv')
+
+# Categorical columns
+label_cols = ['Weather_Condition', 'Light_Conditions', 'Urban_or_Rural_Area',
+              'Day_of_Week', 'Time_of_Day', 'Road_Surface_Condition']
+
+encoders = {}
+
+# Encode all categorical columns
+for col in label_cols:
+    le = LabelEncoder()
+    data[col] = le.fit_transform(data[col])
+    encoders[col] = le
+
+# Define features and target
+X = data[['Speed_Limit', 'Weather_Condition', 'Light_Conditions', 'Number_of_Vehicles_Involved',
+          'Urban_or_Rural_Area', 'Day_of_Week', 'Time_of_Day', 'Road_Surface_Condition']]
+y = data['Accident_Severity']
+
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Train model
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# Predict on training data
+predictions = model.predict(X)
+
+# Reverse encode Weather_Condition for labeling
+weather_labels = encoders['Weather_Condition'].inverse_transform(data['Weather_Condition'])
+
+# Create x-axis labels like: "Rain-50"
+x_labels = [f"{weather}-{speed}" for weather, speed in zip(weather_labels, data['Speed_Limit'])]
+
+# --- Custom Prediction ---
+input_data = {
+    'Speed_Limit': 75,
+    'Weather_Condition': 'Rain',
+    'Light_Conditions': 'Darkness',
+    'Number_of_Vehicles_Involved': 3,
+    'Urban_or_Rural_Area': 'Rural',
+    'Day_of_Week': 'Monday',
+    'Time_of_Day': 'Evening',
+    'Road_Surface_Condition': 'Wet'
+}
+
+# Encode input
+encoded_input = []
+for feature in X.columns:
+    if feature in label_cols:
+        encoded_value = encoders[feature].transform([input_data[feature]])[0]
+    else:
+        encoded_value = input_data[feature]
+    encoded_input.append(encoded_value)
+
+# Predict severity
+new_prediction = model.predict([encoded_input])[0]
+
+# --- Plotting ---
+plt.figure(figsize=(12, 6))
+plt.plot(x_labels, y, 'bo-', label='Actual Severity')
+plt.plot(x_labels, predictions, 'r^-', label='Predicted Severity')
+plt.axhline(new_prediction, color='green', linestyle='--',
+            label=f"Prediction: {input_data['Weather_Condition']}-{input_data['Speed_Limit']} = {round(new_prediction, 2)}")
+
+plt.title('Accident Severity vs Weather & Speed')
+plt.xlabel('Weather - Speed (e.g., Rain-50)')
+plt.ylabel('Accident Severity')
+plt.xticks(rotation=45)
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
